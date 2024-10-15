@@ -10,8 +10,9 @@ console = Console(highlight=False)
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"]))
 @click.argument('to_explore')
-@click.option('-t', '--token', help='Token of Github API (optionnal)', prompt='Token (optionnal)', hide_input=True, prompt_required=False)
-def explore(to_explore: str, token: str) -> None:
+@click.option('-t', '--token', prompt='Token (optionnal)', hide_input=True, prompt_required=False, help='Token of Github API (optionnal)')
+@click.option('-f', '--fork', is_flag=True, show_default=True, default=False, help='Enable exploration for forked repositories')
+def explore(to_explore: str, token: str, fork: bool) -> None:
   """Retrieves usernames and e-mails from repository main branch logs.
 
   TO_EXPLORE: Can be either the username (all public repositories are used) or the name of a specific repository 
@@ -42,7 +43,7 @@ def explore(to_explore: str, token: str) -> None:
       console.print(f'❌ {colorize("TO_EXPLORE must have the pattern", Fore.WHITE)} {colorize("<username>", Fore.RED)} or {colorize("<username>/<repository>", Fore.RED)}')
       exit()
     
-    repos = user.repositories()
+    repos = user.repositories(with_fork=fork)
     repos_count = len(repos)
     console.print(f'✨ {colorize("Found", Fore.WHITE)} {colorize(str(repos_count), Fore.YELLOW)} {colorize("repositories", Fore.WHITE)}')
     for i, repo in enumerate(repos):
